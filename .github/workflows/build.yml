@@ -23,7 +23,7 @@ jobs:
           dotnet-version: 8.0.x
 
       - name: Restore
-        run: dotnet restore .\AI.TaskbarUsage.sln
+        run: dotnet restore .\AI.TaskbarUsage.sln -r win-x64
 
       - name: Build
         run: dotnet build .\AI.TaskbarUsage.sln -c Release -p:Platform=x64 --no-restore
