@@ -1,0 +1,42 @@
+name: Windows build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore
+        run: dotnet restore .\AI.TaskbarUsage.sln
+
+      - name: Build
+        run: dotnet build .\AI.TaskbarUsage.sln -c Release -p:Platform=x64 --no-restore
+
+      - name: Test
+        run: dotnet test .\tests\AI.TaskbarUsage.Tests\AI.TaskbarUsage.Tests.csproj -c Release -p:Platform=x64 --no-build
+
+      - name: Publish portable EXE
+        run: dotnet publish .\src\AI.TaskbarUsage\AI.TaskbarUsage.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:EnableCompressionInSingleFile=true -o .\artifacts\win-x64 --no-build
+
+      - name: Upload Windows x64 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: AI-Taskbar-Usage-win-x64
+          path: .\artifacts\win-x64\AI Taskbar Usage.exe
+          if-no-files-found: error
