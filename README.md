@@ -68,6 +68,24 @@ To clone the packaged EXE as well as the source, install [Git LFS](https://git-l
     git lfs install
     git clone https://github.com/JK-Digitals/AI-Taskbar-Usage.git
 
+## Build it yourself with GitHub Actions
+
+If you prefer not to download a prebuilt EXE, build the application from the public source in your own GitHub fork:
+
+1. Fork this repository.
+2. In the fork, open **Actions** and select **Windows build**. Enable workflows if GitHub asks.
+3. Select **Run workflow**, keep `main` selected, then start the workflow.
+4. Wait for the restore, build and test steps to succeed.
+5. Open the completed run and download the `AI-Taskbar-Usage-win-x64` artifact.
+
+The workflow runs on a fresh GitHub-hosted Windows runner. It uses only the public repository files, has read-only repository permission and is not given your local Claude Code or Codex credentials. The resulting artifact contains the portable EXE only.
+
+For a local build instead, install the .NET 8 SDK and run:
+
+    dotnet restore .\AI.TaskbarUsage.sln
+    dotnet test .\tests\AI.TaskbarUsage.Tests\AI.TaskbarUsage.Tests.csproj -c Release --no-restore
+    dotnet publish .\src\AI.TaskbarUsage\AI.TaskbarUsage.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:EnableCompressionInSingleFile=true -p:DebugType=None -p:DebugSymbols=false -p:Deterministic=true -o .\artifacts\win-x64
+
 ## Installation
 
 AI Taskbar Usage is a portable Windows application: it does not install a service, require administrator rights or modify Windows system files.
@@ -83,7 +101,7 @@ Windows SmartScreen can display an "unknown publisher" warning for a newly publi
 
 ## Windows x64 release
 
-    dotnet publish .\src\AI.TaskbarUsage\AI.TaskbarUsage.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:EnableCompressionInSingleFile=true -o .\artifacts\win-x64
+    dotnet publish .\src\AI.TaskbarUsage\AI.TaskbarUsage.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:IncludeNativeLibrariesForSelfExtract=true -p:EnableCompressionInSingleFile=true -p:DebugType=None -p:DebugSymbols=false -p:Deterministic=true -o .\artifacts\win-x64
 
 The resulting AI Taskbar Usage.exe is the release artifact. No installer, updater, elevation or scheduled task is required. Auto-start is a reversible per-user HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run value.
 
